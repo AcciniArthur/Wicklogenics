@@ -1,0 +1,42 @@
+# ===============================
+# Python
+# ===============================
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+
+# ===============================
+# Tkinter / CustomTkinter
+# ===============================
+*.tcl
+tkinterDnD/
+*.tmp
+
+# ===============================
+# Build / runtime
+# ===============================
+build/
+dist/
+*.spec
+
+# ===============================
+# App runtime data (generated)
+# ===============================
+*.nwk
+*.newick
+*.tree
+*.json
+*.txt
+
+
+# Images dropped/loaded during runtime (optional)
+runtime_images/
+temp/
+tmp/
+
+# ===============================
+# CustomTkinter cache
+# ===============================
+.ctk_cache/
