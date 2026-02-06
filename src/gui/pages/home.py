@@ -34,6 +34,8 @@ class HomePage(ctk.CTkFrame):
         main.grid(row=1, column=0, sticky="nsew", padx=14, pady=(0, 14))
         main.grid_rowconfigure(0, weight=1)
         main.grid_columnconfigure(0, weight=1)
+        main.grid_columnconfigure(1, weight=0)   
+        main.grid_columnconfigure(2, weight=0)
 
         left = ctk.CTkFrame(main)
         left.grid(row=0, column=0, sticky="nsew", padx=(0, 12), pady=12)
@@ -45,9 +47,25 @@ class HomePage(ctk.CTkFrame):
 
         self.viewer = ImageViewer(left)
         self.viewer.grid(row=1, column=0, sticky="nsew", padx=10, pady=(0, 10))
+        
+        # Panel "Noms des feuilles"
+        leaves_panel = ctk.CTkFrame(main, width=180)
+        leaves_panel.grid(row=0, column=1, sticky="ns", padx=(0, 12), pady=12)
+        leaves_panel.grid_propagate(False)
+
+        ctk.CTkLabel(leaves_panel, text="Noms des feuilles", font=ctk.CTkFont(size=14, weight="bold")).pack(
+            anchor="w", padx=12, pady=(12, 8)
+        )
+
+        self.leaves_list = ctk.CTkScrollableFrame(leaves_panel, width=160, height=500)
+        self.leaves_list.pack(fill="both", expand=True, padx=12, pady=(0, 12))
+
+
+
+
 
         right = ctk.CTkFrame(main, width=340)
-        right.grid(row=0, column=1, sticky="ns", padx=(0, 12), pady=12)
+        right.grid(row=0, column=2, sticky="ns", padx=(0, 12), pady=12)
         right.grid_propagate(False)
 
         ctk.CTkLabel(right, text="Édition des points", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", padx=12, pady=(12, 10))
@@ -82,6 +100,13 @@ class HomePage(ctk.CTkFrame):
         self.viewer.set_home_page(self)
         self._setup_dnd_if_available()
         self._apply_mode()
+
+        self.refresh_leaf_panel()
+
+
+
+
+    
 
     def _apply_mode(self):
         self.viewer.set_mode(self.mode_var.get())
@@ -127,6 +152,7 @@ class HomePage(ctk.CTkFrame):
             self.viewer.load_image(path)
             self._hide_drop_zone()
             self.viewer.clear_points()
+            self.refresh_leaf_panel()
         except Exception as e:
             messagebox.showerror("Erreur", f"Impossible de charger l'image:\n{e}")
 
@@ -137,6 +163,7 @@ class HomePage(ctk.CTkFrame):
         try:
             points = run_pipeline(self.image_path)
             self.viewer.set_points(points)
+            self.refresh_leaf_panel()
         except Exception as e:
             messagebox.showerror("Erreur pipeline", str(e))
 
@@ -147,6 +174,53 @@ class HomePage(ctk.CTkFrame):
             return
         newick = compute_newick(pts)
         NewickWindow(self, newick)
+
+
+    def refresh_leaf_panel(self):
+        # Nettoie la liste
+        for child in self.leaves_list.winfo_children():
+            child.destroy()
+
+        points = self.viewer.get_points()
+        tip_indices = [i for i, p in enumerate(points) if p.ptype.value == "tip"]
+
+        if not tip_indices:
+            ctk.CTkLabel(self.leaves_list, text="(aucune)", text_color="gray").pack(anchor="w", padx=6, pady=4)
+            return
+
+        # 1 Entry par TIP
+        for n, idx in enumerate(tip_indices, start=1):
+            p = points[idx]
+
+            row = ctk.CTkFrame(self.leaves_list)
+            row.pack(fill="x", padx=6, pady=4)
+
+            # petit index (optionnel)
+            ctk.CTkLabel(row, text=f"{n}.", width=28).pack(side="left", padx=(6, 6))
+
+            entry = ctk.CTkEntry(row)
+            entry.pack(side="left", fill="x", expand=True, padx=(0, 6))
+
+            # valeur initiale
+            entry.insert(0, p.label or f"tip{n}")
+
+            def commit_label(tip_index=idx, widget=entry):
+                new_name = widget.get().strip()
+                if not new_name:
+                    new_name = "tip"
+                    widget.delete(0, "end")
+                    widget.insert(0, new_name)
+
+                self.viewer.set_point_label(tip_index, new_name)
+
+            # Valider avec Entrée + quand on quitte le champ
+            entry.bind("<Return>", lambda e, f=commit_label: f())
+            entry.bind("<FocusOut>", lambda e, f=commit_label: f())
+
+
+
+
+    
 
 class NewickWindow(ctk.CTkToplevel):
     def __init__(self, master, newick: str):

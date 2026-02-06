@@ -6,7 +6,7 @@ def compute_newick(points: list[Point]) -> str:
     """
     tips = [p.label for p in points if p.ptype == PointType.TIP and p.label]
     if not tips:
-        tips = ["A", "B"]
+        tips = []
     if len(tips) == 1:
         return f"({tips[0]});"
     if len(tips) == 2:

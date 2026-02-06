@@ -82,14 +82,24 @@ class ImageViewer(ctk.CTkFrame):
         self.points = []
         self.selected_index = None
         self._redraw_points()
+        if self._home_page is not None:
+            self._home_page.refresh_leaf_panel()
 
     def delete_selected_point(self):
         if self.selected_index is None:
-            return
+            return 
         if 0 <= self.selected_index < len(self.points):
             self.points.pop(self.selected_index)
         self.selected_index = None
         self._redraw_points()
+        if self._home_page is not None:
+            self._home_page.refresh_leaf_panel()
+
+    def set_point_label(self, index: int, label: str):
+        if 0 <= index < len(self.points):
+            self.points[index].label = label
+            self._redraw_points()
+
 
     def _bind_events(self):
         self.canvas.bind("<Configure>", lambda e: self._render_image_and_points())
@@ -206,12 +216,16 @@ class ImageViewer(ctk.CTkFrame):
                 self.points.append(Point(ix, iy, ptype, label))
                 self.selected_index = len(self.points) - 1
                 self._redraw_points()
+                if self._home_page is not None:
+                    self._home_page.refresh_leaf_panel()
             return
 
         idx = self._hit_test(event.x, event.y, threshold=10)
         self.selected_index = idx
         self._drag_point_index = idx
         self._redraw_points()
+        
+
 
     def _on_left_drag(self, event):
         if not self._img_pil:
