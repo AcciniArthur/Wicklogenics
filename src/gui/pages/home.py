@@ -77,7 +77,7 @@ class HomePage(ctk.CTkFrame):
         helpbox = ctk.CTkFrame(right)
         helpbox.pack(fill="x", padx=12, pady=(0, 12))
         ctk.CTkLabel(helpbox, text="Raccourcis", font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=10, pady=(10, 6))
-        ctk.CTkLabel(helpbox, text="• Zoom: molette\n• Pan: clic milieu / ou Shift + clic gauche\n• Déplacer point: clic + drag\n• Supprimer: Del", justify="left").pack(anchor="w", padx=10, pady=(0, 10))
+        ctk.CTkLabel(helpbox, text="• ← ↑ ↓ → / Clic droit + Drag: Déplacement\n• Zoom: molette\n• Pan: clic milieu / ou Shift + clic gauche\n• Déplacer point: clic + drag\n• Supprimer: Del\n ", justify="left").pack(anchor="w", padx=10, pady=(0, 10))
 
         self.viewer.set_home_page(self)
         self._setup_dnd_if_available()

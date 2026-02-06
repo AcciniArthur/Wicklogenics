@@ -50,6 +50,8 @@ class ImageViewer(ctk.CTkFrame):
         self._bind_events()
         self.canvas.configure(takefocus=True)
 
+        
+
 
     def set_home_page(self, home_page):
         self._home_page = home_page
@@ -113,6 +115,11 @@ class ImageViewer(ctk.CTkFrame):
         self.canvas.bind("<Right>", self._on_arrow_key)
         self.canvas.bind("<Up>", self._on_arrow_key)
         self.canvas.bind("<Down>", self._on_arrow_key)
+
+        # Pan: right click drag
+        self.canvas.bind("<Button-3>", self._on_right_down)
+        self.canvas.bind("<B3-Motion>", self._on_right_drag)
+        self.canvas.bind("<ButtonRelease-3>", self._on_right_up)
 
         self.canvas.bind_all("<Delete>", lambda e: self.delete_selected_point())
 
@@ -319,4 +326,24 @@ class ImageViewer(ctk.CTkFrame):
             self.pan_y -= step
 
         self._render_image_and_points()
+
+    def _on_right_down(self, event):
+        self.canvas.focus_set()
+        self._panning = True
+        self._pan_last = (event.x, event.y)
+
+    def _on_right_drag(self, event):
+        if not self._panning:
+            return
+        dx = event.x - self._pan_last[0]
+        dy = event.y - self._pan_last[1]
+        self._pan_last = (event.x, event.y)
+
+        self.pan_x += dx
+        self.pan_y += dy
+        self._render_image_and_points()
+
+    def _on_right_up(self, event):
+        self._panning = False
+
 
