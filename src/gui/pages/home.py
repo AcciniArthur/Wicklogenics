@@ -86,6 +86,15 @@ class HomePage(ctk.CTkFrame):
     def _apply_mode(self):
         self.viewer.set_mode(self.mode_var.get())
 
+    def _show_drop_zone(self):
+        self.drop_zone.grid()  # ré-affiche
+        self.viewer.grid_configure(pady=(0, 10))
+
+    def _hide_drop_zone(self):
+        self.drop_zone.grid_remove()  # cache sans casser la grille
+        self.viewer.grid_configure(pady=(10, 10))  # remonte et prend tout
+
+
     def _setup_dnd_if_available(self):
         try:
             self.drop_zone.drop_target_register("DND_Files")  # type: ignore
@@ -116,6 +125,7 @@ class HomePage(ctk.CTkFrame):
         self.image_path = path
         try:
             self.viewer.load_image(path)
+            self._hide_drop_zone()
             self.viewer.clear_points()
         except Exception as e:
             messagebox.showerror("Erreur", f"Impossible de charger l'image:\n{e}")

@@ -48,6 +48,8 @@ class ImageViewer(ctk.CTkFrame):
 
         self._home_page = None
         self._bind_events()
+        self.canvas.configure(takefocus=True)
+
 
     def set_home_page(self, home_page):
         self._home_page = home_page
@@ -63,6 +65,7 @@ class ImageViewer(ctk.CTkFrame):
         self.selected_index = None
         # force layout sizes updated
         self.update_idletasks()
+        self.canvas.focus_set()
         self._render_image_and_points()
 
     def set_points(self, points: list[Point]):
@@ -89,11 +92,11 @@ class ImageViewer(ctk.CTkFrame):
     def _bind_events(self):
         self.canvas.bind("<Configure>", lambda e: self._render_image_and_points())
 
-        self.canvas.bind("<Button-1>", self._on_left_down)
+        self.canvas.bind("<Button-1>", lambda e: (self.canvas.focus_set(), self._on_left_down(e)))
         self.canvas.bind("<B1-Motion>", self._on_left_drag)
         self.canvas.bind("<ButtonRelease-1>", self._on_left_up)
 
-        self.canvas.bind("<Button-2>", self._on_middle_down)
+        self.canvas.bind("<Button-2>", lambda e: (self.canvas.focus_set(), self._on_middle_down(e)))
         self.canvas.bind("<B2-Motion>", self._on_middle_drag)
         self.canvas.bind("<ButtonRelease-2>", self._on_middle_up)
 
@@ -104,6 +107,12 @@ class ImageViewer(ctk.CTkFrame):
         self.canvas.bind("<MouseWheel>", self._on_mousewheel)      # Windows
         self.canvas.bind("<Button-4>", self._on_mousewheel_linux)  # Linux
         self.canvas.bind("<Button-5>", self._on_mousewheel_linux)
+
+        # Flèches = pan
+        self.canvas.bind("<Left>", self._on_arrow_key)
+        self.canvas.bind("<Right>", self._on_arrow_key)
+        self.canvas.bind("<Up>", self._on_arrow_key)
+        self.canvas.bind("<Down>", self._on_arrow_key)
 
         self.canvas.bind_all("<Delete>", lambda e: self.delete_selected_point())
 
@@ -286,3 +295,28 @@ class ImageViewer(ctk.CTkFrame):
         if best_d <= threshold ** 2:
             return best_i
         return None
+    
+    def _on_arrow_key(self, event):
+        if not self._img_pil:
+            return
+
+        # vitesse de déplacement
+        step = 50
+        # Shift = plus rapide
+        if event.state & 0x0001:
+            step = 60
+        # Ctrl = plus précis
+        if event.state & 0x0004:
+            step = 5
+
+        if event.keysym == "Left":
+            self.pan_x += step
+        elif event.keysym == "Right":
+            self.pan_x -= step
+        elif event.keysym == "Up":
+            self.pan_y += step
+        elif event.keysym == "Down":
+            self.pan_y -= step
+
+        self._render_image_and_points()
+
