@@ -161,9 +161,12 @@ class HomePage(ctk.CTkFrame):
             messagebox.showwarning("Info", "Charge une image d'abord.")
             return
         try:
-            points = run_pipeline(self.image_path)
+            points, leaf_names = run_pipeline(self.image_path)
+            print("1111111111111111111111111111111111111111111")
             self.viewer.set_points(points)
+            print("22222222222222222222222222222222222")
             self.refresh_leaf_panel()
+            print("3333333333333333333333333333333333333")
         except Exception as e:
             messagebox.showerror("Erreur pipeline", str(e))
 

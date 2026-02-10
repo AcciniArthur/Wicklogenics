@@ -5,8 +5,8 @@ Corrige les nodes, corners et leaves manquants.
 
 from typing import List, Tuple
 
-from itpt._data.models.v0.postprocess.corrector_leaves import leaf_line_correction_step1, fix_leaves_step
-from itpt._data.models.v0.postprocess.corrector_vote import (
+from src.core.scripts.postprocessing.corrector_leaves import leaf_line_correction_step1, fix_leaves_step
+from src.core.scripts.postprocessing.corrector_vote import (
     apply_rules_one_pass,
     consolidate_future_and_select_points,
     print_future_list,
