@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-newick_clean.py
-
 Construit un Newick (avec longueurs de branches RELATIVES) à partir de 3 listes de points :
 - leaves    : [(x,y), ...]
 - internals : [(x,y), ...]

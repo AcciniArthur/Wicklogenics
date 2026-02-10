@@ -57,3 +57,8 @@ class WicklogenicsApp:
         if page:
             page.tkraise()
             self.navbar.set_active(key)
+
+
+if __name__ == "__main__":
+    run_app()
+
