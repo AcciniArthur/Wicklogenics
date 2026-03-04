@@ -15,6 +15,7 @@ class HomePage(ctk.CTkFrame):
 
         # layout
         self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=0)
         self.grid_columnconfigure(0, weight=1)
 
         header = ctk.CTkFrame(self)
@@ -79,9 +80,17 @@ class HomePage(ctk.CTkFrame):
         ctk.CTkLabel(helpbox, text="Raccourcis", font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=10, pady=(10, 6))
         ctk.CTkLabel(helpbox, text="• ← ↑ ↓ → / Clic droit + Drag: Déplacement\n• Zoom: molette\n• Pan: clic milieu / ou Shift + clic gauche\n• Déplacer point: clic + drag\n• Supprimer: Del\n ", justify="left").pack(anchor="w", padx=10, pady=(0, 10))
 
+        footer = ctk.CTkFrame(self, fg_color="transparent")
+        footer.grid(row=2, column=0, sticky="ew", padx=14, pady=(0, 12))
+        footer.grid_columnconfigure(0, weight=1)
+        ctk.CTkButton(footer, text="Quitter", fg_color="#c0392b", hover_color="#96281b", command=self._quit_app).grid(row=0, column=1, padx=(0, 6))
+
         self.viewer.set_home_page(self)
         self._setup_dnd_if_available()
         self._apply_mode()
+
+    def _quit_app(self):
+        self.winfo_toplevel().destroy()
 
     def _apply_mode(self):
         self.viewer.set_mode(self.mode_var.get())
